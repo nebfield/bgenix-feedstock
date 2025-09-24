@@ -1,39 +1,38 @@
 {% set version = "1.1.7" %}
+{% set sha256 = "69703c3f5d6d8c22bd933d2550caf4496f9c8b9876299b162e0b9a2ab2cfa605" %}
 
 package:
   name: bgenix
-  version: "{{ version|replace('-', '_') }}"
+  version: "{{ version }}"
 
 source:
-  url: https://github.com/huntdatacenter/rbgen/releases/download/{{ version }}/bgen-{{ version }}.tar.bz2
-  sha256: 9d1cac81142ed639cd928db92a2f860f82665b82ebf858bc3ad43c99faffd5f2
+  # bgen is distributed via a fossil repo, so I created a git mirror by importing fossil's history
+  # (the repo hasn't been updated for a few years)
+  url: https://github.com/nebfield/bgen-git-mirror/archive/refs/tags/v{{version}}.tar.gz
+  sha256: {{ sha256 }}
 
 build:
   skip: true  # [win]
-  number: 5
+  number: 6
 
 requirements:
   build:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
   host:
-    - boost {{ boost }}
-    - boost-cpp {{ boost }}
-    - sqlite
     - zlib
-    - zstd
   run:
-    - boost-cpp {{ boost }}
+    - zlib
 
 test:
-  source_files:
-    - example/example.15bits.bgen
-    - example/example.16bits.bgen
-    - example/example.16bits.bgen.bgi
   commands:
     - bgenix -help
-    - bgenix -g example/example.16bits.bgen >/dev/null
-    - bgenix -g example/example.15bits.bgen -index
+    - cat-bgen -help
+    - edit-bgen -help
+
+build_platform:
+  osx_arm64: osx_64
+  linux_aarch64: linux_64
 
 about:
   home: https://enkre.net/cgi-bin/code/bgen
@@ -51,3 +50,4 @@ about:
 extra:
   recipe-maintainers:
     - matuskosut
+    - nebfield
